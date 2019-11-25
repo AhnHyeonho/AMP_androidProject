@@ -1,4 +1,4 @@
-package com.hansung.findfriendsapp.data;
+package com.hansung.findfriendsapp.model.datasource.data;
 
 import android.util.Pair;
 

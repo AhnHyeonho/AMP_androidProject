@@ -22,10 +22,14 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.hansung.findfriendsapp.model.datasource.remote.RemoteDataSourceImpl;
 
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
+
+    private RemoteDataSourceImpl remoteDataSource = RemoteDataSourceImpl.getInstance();
+
 
     // 비밀번호 정규식
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^[a-zA-Z0-9!@.#$%^&*?_~]{4,16}$");
@@ -57,18 +61,24 @@ public class MainActivity extends AppCompatActivity {
 
         viewInit();
 
-        // 파이어베이스 인증 객체 선언
+        // 파이어베이스 인증 객체 선언      // 날려버려이부분
         firebaseAuth = FirebaseAuth.getInstance();
-        //TODO repo.initFireBase()
-        //repo.initFireBase(); // 이런식으로 나중에 쓰게 됨.
+        //TODO repo.initFirebase()
+        //repo.initFirebase(); // 이런식으로 나중에 쓰게 됨.
 
+
+
+
+        //   initGoogleLogin(Activity activity) 해줄 부분
         // Google 로그인을 앱에 통합
         // GoogleSignInOptions 개체를 구성할 때 requestIdToken을 호출
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
+        /// 여기까지날려
 
+        //google 로그인에 관련된 객체
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
         buttonGoogle.setOnClickListener(new View.OnClickListener() {
