@@ -1,7 +1,5 @@
 package com.hansung.findfriendsapp.model.datasource.data;
 
-import android.util.Pair;
-
 public class User {
     private String userName; // 실명
     private String userNickName; // 별명
