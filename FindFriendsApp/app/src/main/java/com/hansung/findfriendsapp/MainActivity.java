@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -16,14 +15,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.hansung.findfriendsapp.model.datasource.LoginCallBack;
 import com.hansung.findfriendsapp.model.datasource.Repository;
 import com.hansung.findfriendsapp.model.datasource.RepositoryImpl;
+import com.hansung.findfriendsapp.model.datasource.data.Pair;
 import com.hansung.findfriendsapp.model.datasource.remote.RemoteDataSourceImpl;
 
 import java.util.regex.Pattern;
@@ -82,20 +80,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void singUp(View view) {
-        email = editTextEmail.getText().toString();
-        password = editTextPassword.getText().toString();
+        Pair<String, String> loginInfo = new Pair(editTextEmail.getText().toString(), editTextPassword.getText().toString());
 
         if (isValidEmail() && isValidPasswd()) {
-            createUser(email, password);
+            createUser(loginInfo);
         }
     }
 
     public void signIn(View view) {
-        email = editTextEmail.getText().toString();
-        password = editTextPassword.getText().toString();
+        Pair<String, String> loginInfo = new Pair(editTextEmail.getText().toString(), editTextPassword.getText().toString());
 
         if (isValidEmail() && isValidPasswd()) {
-            loginUser(email, password);
+            loginUser(loginInfo);
         }
     }
 
@@ -117,38 +113,39 @@ public class MainActivity extends AppCompatActivity {
         } else return PASSWORD_PATTERN.matcher(password).matches();
     }
 
-    // 회원가입
-    private void createUser(String email, String password) {
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // 회원가입 성공
-                            Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
-                        } else {
-                            // 회원가입 실패
-                            Toast.makeText(MainActivity.this, R.string.failed_signup, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    // 일반계정 회원가입
+    private void createUser(Pair<String, String> loginInfo) {
+        repository.doCreateUser(loginInfo, new LoginCallBack(){
+            @Override
+            public void onSuccess() {
+                //회원가입 성공에 대한 처리
+                Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail() {
+                //회원가입 실패에 대한 처리
+                Toast.makeText(MainActivity.this, R.string.failed_signup, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // 로그인
-    private void loginUser(String email, String password) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // 로그인 성공
-                            Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
-                        } else {
-                            // 로그인 실패
-                            Toast.makeText(MainActivity.this, R.string.failed_login, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    // 일반계정 로그인
+    private void loginUser(Pair<String, String> loginInfo) {
+        repository.doLoginUser(loginInfo, new LoginCallBack(){
+            @Override
+            public void onSuccess() {
+                //로그인 성공에 대한 처리
+                //여기에 intent를 주면된다.
+                Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail() {
+                //로그인 실패에 대한 처리
+                Toast.makeText(MainActivity.this, R.string.failed_login, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -168,25 +165,25 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // 구글계정 로그인
     // 사용자가 정상적으로 로그인한 후에 GoogleSignInAccount 개체에서 ID 토큰을 가져와서
-// Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
+    // Firebase 사용자 인증 정보로 교환하고 Firebase 사용자 인증 정보를 사용해 Firebase에 인증합니다.
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // 로그인 성공
-                            Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
-                        } else {
-                            // 로그인 실패
-                            Toast.makeText(MainActivity.this, R.string.failed_login, Toast.LENGTH_SHORT).show();
-                        }
 
-                    }
-                });
+        repository.doFirebaseAuthWithGoogle(credential, new LoginCallBack() {
+            @Override
+            public void onSuccess() {
+                // 로그인 성공
+                Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFail() {
+                //로그인 실패
+                Toast.makeText(MainActivity.this, R.string.failed_login, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void viewInit() {
