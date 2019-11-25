@@ -30,18 +30,16 @@ import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Repository repository = new RepositoryImpl(RemoteDataSourceImpl.getInstance()); // Repository 생성 및 RemoteDataSource 생성
+    // Repository 생성 및 RemoteDataSource 생성
+    private Repository repository = new RepositoryImpl(RemoteDataSourceImpl.getInstance());
 
     // 비밀번호 정규식
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^[a-zA-Z0-9!@.#$%^&*?_~]{4,16}$");
-    //
-    //    // 파이어베이스 인증 객체 생성
-    private FirebaseAuth firebaseAuth;
-    //
-    //    // 이메일과 비밀번호
+
+    // 이메일과 비밀번호
     private EditText editTextEmail;
     private EditText editTextPassword;
-    //
+
     private String email = "";
     private String password = "";
     //
@@ -64,24 +62,13 @@ public class MainActivity extends AppCompatActivity {
 
         viewInit();
 
-        // 파이어베이스 인증 객체 선언      // 날려버려이부분
-        firebaseAuth = FirebaseAuth.getInstance();
-        //TODO repo.initFirebase()
-        //repo.initFirebase(); // 이런식으로 나중에 쓰게 됨.
+        // 파이어베이스 인증 객체 선언
+        repository.initFirebase();
 
-
-
-
-        //   initGoogleLogin(Activity activity) 해줄 부분
         // Google 로그인을 앱에 통합
         // GoogleSignInOptions 개체를 구성할 때 requestIdToken을 호출
         String defaultWebClientId = getString(R.string.default_web_client_id);
-        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(defaultWebClientId)
-                .requestEmail()
-                .build();
-        /// 여기까지날려
-
+        GoogleSignInOptions googleSignInOptions = repository.initGoogleLogin(defaultWebClientId);
         //google 로그인에 관련된 객체
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 

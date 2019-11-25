@@ -1,5 +1,6 @@
 package com.hansung.findfriendsapp.model.datasource;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.hansung.findfriendsapp.model.datasource.data.User;
 import com.hansung.findfriendsapp.model.datasource.remote.RemoteDataSource;
 
@@ -18,8 +19,8 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public void initGoogleLogin(String id) {
-        remoteDataSource.initGoogleLogin(id);
+    public GoogleSignInOptions initGoogleLogin(String id) {
+        return remoteDataSource.initGoogleLogin(id);
     }
 
     @Override

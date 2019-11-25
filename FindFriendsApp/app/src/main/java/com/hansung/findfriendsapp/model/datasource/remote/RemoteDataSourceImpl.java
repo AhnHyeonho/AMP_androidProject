@@ -2,13 +2,11 @@ package com.hansung.findfriendsapp.model.datasource.remote;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.hansung.findfriendsapp.R;
 import com.hansung.findfriendsapp.model.datasource.data.User;
 
 public class RemoteDataSourceImpl implements RemoteDataSource {
 
     private FirebaseAuth firebaseAuth;
-    private GoogleSignInOptions googleSignInOptions;
 
     private RemoteDataSourceImpl(){}
 
@@ -29,11 +27,16 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
     // Google 로그인 관련 초기화 메소드
 
     @Override
-    public void initGoogleLogin(String id) {
-        googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(id)
-                .requestEmail()
-                .build();
+    public GoogleSignInOptions initGoogleLogin(String id) {
+        try {
+            return new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(id)
+                    .requestEmail()
+                    .build();
+        }
+        catch (Exception e){
+            throw e;
+        }
     }
 
     // firebase 관련 초기화 메소드
@@ -45,6 +48,6 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
     //로그인을 시도한 User에 대한 정보를 읽어오는 메소드
     @Override
     public User getUser() {
-        return null;
+        return null; // 작성해야함
     }
 }
