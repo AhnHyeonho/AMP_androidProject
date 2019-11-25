@@ -22,14 +22,15 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.hansung.findfriendsapp.model.datasource.Repository;
+import com.hansung.findfriendsapp.model.datasource.RepositoryImpl;
 import com.hansung.findfriendsapp.model.datasource.remote.RemoteDataSourceImpl;
 
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RemoteDataSourceImpl remoteDataSource = RemoteDataSourceImpl.getInstance();
-
+    private Repository repository = new RepositoryImpl(RemoteDataSourceImpl.getInstance()); // Repository 생성 및 RemoteDataSource 생성
 
     // 비밀번호 정규식
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^[a-zA-Z0-9!@.#$%^&*?_~]{4,16}$");
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
     private SignInButton buttonGoogle;
 
     //TODO private Repository repo = RepositoryImpl.get~~~~()
+    //remoteDataSource.
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
         //   initGoogleLogin(Activity activity) 해줄 부분
         // Google 로그인을 앱에 통합
         // GoogleSignInOptions 개체를 구성할 때 requestIdToken을 호출
+        String defaultWebClientId = getString(R.string.default_web_client_id);
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(defaultWebClientId)
                 .requestEmail()
                 .build();
         /// 여기까지날려

@@ -1,7 +1,5 @@
 package com.hansung.findfriendsapp.model.datasource.remote;
 
-import android.app.Activity;
-
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hansung.findfriendsapp.R;
@@ -31,9 +29,9 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
     // Google 로그인 관련 초기화 메소드
 
     @Override
-    public void initGoogleLogin(Activity activity) {
+    public void initGoogleLogin(String id) {
         googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.default_web_client_id))
+                .requestIdToken(id)
                 .requestEmail()
                 .build();
     }
