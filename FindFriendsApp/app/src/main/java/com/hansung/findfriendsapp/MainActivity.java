@@ -1,14 +1,14 @@
 package com.hansung.findfriendsapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -29,36 +29,38 @@ public class MainActivity extends AppCompatActivity {
 
     // 비밀번호 정규식
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^[a-zA-Z0-9!@.#$%^&*?_~]{4,16}$");
-
-    // 파이어베이스 인증 객체 생성
+    //
+    //    // 파이어베이스 인증 객체 생성
     private FirebaseAuth firebaseAuth;
-
-    // 이메일과 비밀번호
+    //
+    //    // 이메일과 비밀번호
     private EditText editTextEmail;
     private EditText editTextPassword;
-
+    //
     private String email = "";
     private String password = "";
-
-    // 구글로그인 result 상수
+    //
+    //    // 구글로그인 result 상수
     private static final int RC_SIGN_IN = 900;
-
-    // 구글api클라이언트
+    //
+    //    // 구글api클라이언트
     private GoogleSignInClient googleSignInClient;
 
     // 구글  로그인 버튼
     private SignInButton buttonGoogle;
 
-
+    //TODO private Repository repo = RepositoryImpl.get~~~~()
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        viewInit();
+
         // 파이어베이스 인증 객체 선언
         firebaseAuth = FirebaseAuth.getInstance();
-
-        buttonGoogle = findViewById(R.id.btn_googleSignIn);
+        //TODO repo.initFireBase()
+        //repo.initFireBase(); // 이런식으로 나중에 쓰게 됨.
 
         // Google 로그인을 앱에 통합
         // GoogleSignInOptions 개체를 구성할 때 requestIdToken을 호출
@@ -82,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         email = editTextEmail.getText().toString();
         password = editTextPassword.getText().toString();
 
-        if(isValidEmail() && isValidPasswd()) {
+        if (isValidEmail() && isValidPasswd()) {
             createUser(email, password);
         }
     }
@@ -91,35 +93,27 @@ public class MainActivity extends AppCompatActivity {
         email = editTextEmail.getText().toString();
         password = editTextPassword.getText().toString();
 
-        if(isValidEmail() && isValidPasswd()) {
+        if (isValidEmail() && isValidPasswd()) {
             loginUser(email, password);
         }
     }
 
     // 이메일 유효성 검사
     private boolean isValidEmail() {
+        // 이메일 형식 불일치
         if (email.isEmpty()) {
             // 이메일 공백
             return false;
-        } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            // 이메일 형식 불일치
-            return false;
-        } else {
-            return true;
-        }
+        } else return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
     // 비밀번호 유효성 검사
     private boolean isValidPasswd() {
+        // 비밀번호 형식 불일치
         if (password.isEmpty()) {
             // 비밀번호 공백
             return false;
-        } else if (!PASSWORD_PATTERN.matcher(password).matches()) {
-            // 비밀번호 형식 불일치
-            return false;
-        } else {
-            return true;
-        }
+        } else return PASSWORD_PATTERN.matcher(password).matches();
     }
 
     // 회원가입
@@ -140,8 +134,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 로그인
-    private void loginUser(String email, String password)
-    {
+    private void loginUser(String email, String password) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -193,5 +186,11 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void viewInit() {
+        editTextEmail = findViewById(R.id.et_email);
+        editTextPassword = findViewById(R.id.et_password);
+        buttonGoogle = findViewById(R.id.btn_googleSignIn);
     }
 }
