@@ -11,13 +11,21 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.hansung.findfriendsapp.model.datasource.LoginCallBack;
 import com.hansung.findfriendsapp.model.datasource.data.Pair;
 import com.hansung.findfriendsapp.model.datasource.data.User;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class RemoteDataSourceImpl implements RemoteDataSource {
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference userReference;
+    private DatabaseReference groupReference;
 
     private RemoteDataSourceImpl() {
     }
@@ -67,6 +75,12 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                         if (task.isSuccessful()) {
                             // 회원가입 성공
                             Log.d("ahn", "remoteDataSource onComplete Success");
+                            // realtime database에 해당 이름으로 사용자 정보 추가
+                            Log.d("ahn", "curretUser uid : " + firebaseAuth.getCurrentUser().getUid());
+
+                            String userUid = firebaseAuth.getCurrentUser().getUid();
+                            userReference.child(userUid).setValue(new User("","","","","","",""));
+
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
                         } else {
@@ -87,6 +101,9 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // 로그인 성공
+                            String userUid = firebaseAuth.getCurrentUser().getUid();
+                            userReference.child(userUid).setValue(new User("","","","","","",""));
+
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
                         } else {
@@ -116,6 +133,9 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
     @Override
     public void initFirebase() {
         firebaseAuth = FirebaseAuth.getInstance(); // FirebaseAuth 초기화
+        firebaseDatabase = FirebaseDatabase.getInstance(); // FIrebaseDatabase 초기화
+        userReference = firebaseDatabase.getReference("User"); // 사용자 목록 root인 User로 초기화
+        groupReference = firebaseDatabase.getReference("Group"); // 사용자 목록 root인 User로 초기화
     }
 
     //로그인을 시도한 User에 대한 정보를 읽어오는 메소드

@@ -13,7 +13,6 @@ public interface RemoteDataSource {
 
     void doFirebaseAuthWithGoogle(AuthCredential credential, LoginCallBack callback);
 
-
     GoogleSignInOptions initGoogleLogin(String id); // Google 로그인 관련 초기화 메소드
 
     void initFirebase(); // firebase 관련 초기화 메소드
