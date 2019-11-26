@@ -2,6 +2,7 @@ package com.hansung.findfriendsapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -80,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void singUp(View view) {
-        Pair<String, String> loginInfo = new Pair(editTextEmail.getText().toString(), editTextPassword.getText().toString());
+        email = editTextEmail.getText().toString();
+        password = editTextPassword.getText().toString();
+        Log.d("ahn", "signUp// email : " + email + " password : " + password);
+        Pair<String, String> loginInfo = Pair.create(email, password);
 
         if (isValidEmail() && isValidPasswd()) {
             createUser(loginInfo);
@@ -88,7 +92,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signIn(View view) {
-        Pair<String, String> loginInfo = new Pair(editTextEmail.getText().toString(), editTextPassword.getText().toString());
+        email = editTextEmail.getText().toString();
+        password = editTextPassword.getText().toString();
+        Log.d("ahn", "signIn// email : " + email + " password : " + password);
+        Pair<String, String> loginInfo = Pair.create(email, password);
 
         if (isValidEmail() && isValidPasswd()) {
             loginUser(loginInfo);
