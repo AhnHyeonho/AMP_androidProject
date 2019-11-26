@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess() {
                 //회원가입 성공에 대한 처리
                 Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
+                //realtime database의 users 트리안에 해당 uid로 child 생성.
             }
 
             @Override
