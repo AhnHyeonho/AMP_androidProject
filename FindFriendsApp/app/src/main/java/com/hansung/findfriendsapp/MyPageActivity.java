@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -14,16 +17,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class MyPageActivity extends AppCompatActivity {
 
     private String userID = "admin";
     private EditText userAlias;
-    private EditText userState;
     private EditText phoneNumber;
     private String [] stateArray = {"online","offline","away"};
+    private ArrayAdapter adapter;
 
     private Spinner stateSpinner;
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
@@ -37,26 +39,42 @@ public class MyPageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_page);
 
         userAlias = (EditText)findViewById(R.id.userAlias);
-        userState = (EditText)findViewById(R.id.userState);
+        stateSpinner = (Spinner)findViewById(R.id.stateSpinner);
         phoneNumber = (EditText)findViewById(R.id.phoneNumber);
+
+        adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,stateArray);
+        stateSpinner.setAdapter(adapter);
 
         stateRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String text = dataSnapshot.getValue(String.class);
-                userState.setText(text);
+                int index;
+                switch(text){
+                    case "online" : index =0;break;
+                    case "offline" : index = 1; break;
+                    case "away" : index = 2; break;
+                    default: index= 0;break;
+                }
+                stateSpinner.setSelection(index);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
-        init(userID);
-    }
-
-    public void init(String userID) { //userID로 데이터 베이스에서 정보를 가져와서 초기화
-
+        stateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //선택된 데이터로 저장
+                String msg = adapterView.getSelectedItem().toString();
+                Log.e("test",msg);
+                stateRef.setValue(msg);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
     }
 }
