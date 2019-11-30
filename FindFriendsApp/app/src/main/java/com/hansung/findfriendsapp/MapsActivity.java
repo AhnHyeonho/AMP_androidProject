@@ -10,6 +10,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 // https://developers.google.com/maps/documentation/android-sdk/start?hl=ko 참고
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -40,8 +41,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        // marker의 위치를 gps로 가져와야할듯
+        LatLng seoul = new LatLng(37.56, 126.97);
+        mMap.addMarker(new MarkerOptions().position(seoul).title("Marker in Seoul").snippet("city of Korea"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(seoul));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
     }
 }
