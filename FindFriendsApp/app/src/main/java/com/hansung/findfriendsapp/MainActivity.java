@@ -1,7 +1,12 @@
 package com.hansung.findfriendsapp;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
@@ -24,6 +29,8 @@ import com.hansung.findfriendsapp.model.datasource.RepositoryImpl;
 import com.hansung.findfriendsapp.model.datasource.data.Pair;
 import com.hansung.findfriendsapp.model.datasource.remote.RemoteDataSourceImpl;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //kakaomap api에 등록할 프로젝트 hasykey를 얻는 메소드
+        Log.d("Jisung", "테스트중입니다.");
+        getHashKey();
 
         viewInit();
 
@@ -115,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 일반계정 회원가입
     private void createUser(Pair<String, String> loginInfo) {
-        repository.doCreateUser(loginInfo, new LoginCallBack(){
+        repository.doCreateUser(loginInfo, new LoginCallBack() {
             @Override
             public void onSuccess() {
                 //회원가입 성공에 대한 처리
@@ -132,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     // 일반계정 로그인
     private void loginUser(Pair<String, String> loginInfo) {
-        repository.doLoginUser(loginInfo, new LoginCallBack(){
+        repository.doLoginUser(loginInfo, new LoginCallBack() {
             @Override
             public void onSuccess() {
                 //로그인 성공에 대한 처리
@@ -191,4 +202,28 @@ public class MainActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.et_password);
         buttonGoogle = findViewById(R.id.btn_googleSignIn);
     }
+
+    // 카카오맵 api에 등록할 해쉬키를 얻는 메소드
+    private void getHashKey(){
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (packageInfo == null)
+            Log.e("KeyHash", "KeyHash:null");
+
+        for (Signature signature : packageInfo.signatures) {
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            } catch (NoSuchAlgorithmException e) {
+                Log.e("KeyHash", "Unable to get MessageDigest. signature=" + signature, e);
+            }
+        }
+    }
+
+
 }
