@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -21,17 +22,23 @@ import java.util.ArrayList;
 
 public class MyPageActivity extends AppCompatActivity {
 
-    private String userID = "admin";
-    private EditText userAlias;
-    private EditText phoneNumber;
+    /////////////////////////////////////임시 : 액티비티를 실행할 때 실시간 데이터 베이스에서 유저의 계정을 찾을 수 있는 identity를 intent를 통해서 얻는다.
+    private String userID = "test2";   //key의 역할을 임시로 admin으로 지정.
+    //------------------------------------------------------------------------------------------------------------------------------------//
+    //private ArrayList<String> stateArray = new ArrayList<>();
     private String [] stateArray = {"online","offline","away"};
     private ArrayAdapter adapter;
-
+    private EditText userAlias;
     private Spinner stateSpinner;
-    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference accountRef = mRootRef.child("account");
+    private EditText phoneNumber;
+    private Button applyBtn;
+    private Button revertBtn;
+
+    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+    DatabaseReference accountRef = rootRef.child("account");
     DatabaseReference userRef = accountRef.child(userID);
-    DatabaseReference stateRef = userRef.child("state");
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,40 +48,68 @@ public class MyPageActivity extends AppCompatActivity {
         userAlias = (EditText)findViewById(R.id.userAlias);
         stateSpinner = (Spinner)findViewById(R.id.stateSpinner);
         phoneNumber = (EditText)findViewById(R.id.phoneNumber);
+        applyBtn = (Button)findViewById(R.id.applyBtn);
+        revertBtn = (Button)findViewById(R.id.revertBtn);
 
-        adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,stateArray);
-        stateSpinner.setAdapter(adapter);
+        revertBtn.setOnClickListener(new View.OnClickListener(){    //이전 액티비티로 돌아가기 버튼
+            @Override
+            public void onClick(View view) {
 
-        stateRef.addValueEventListener(new ValueEventListener() {
+            }
+        });
+        adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,stateArray);   //스피너 어댑터 초기화
+        dataInit();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //dataInit();
+        /*userRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String text = dataSnapshot.getValue(String.class);
-                int index;
-                switch(text){
-                    case "online" : index =0;break;
-                    case "offline" : index = 1; break;
-                    case "away" : index = 2; break;
-                    default: index= 0;break;
-                }
-                stateSpinner.setSelection(index);
+                userAlias.setText(dataSnapshot.child("alias").getValue().toString());
+                stateSpinner.setAdapter(adapter);   //리스너에 어댑터를 설정하고,
+                stateSpinner.setSelection(0);
+                phoneNumber.setText(dataSnapshot.child("phoneNumber").getValue().toString());
             }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });*/
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        userRef.child("state").setValue("offline");
+    }
+
+
+    public void dataInit(){     //데이터베이스로부터 데이터를 가져와 초기화
+        Log.e("test","listener작동");
+        rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                DataSnapshot userDataSnapShot = dataSnapshot.child("account").child(userID);
+                userAlias.setText(userDataSnapShot.child("alias").getValue().toString());
+                stateSpinner.setAdapter(adapter);   //리스너에 어댑터를 설정하고,
+                stateSpinner.setSelection(0);
+                phoneNumber.setText(userDataSnapShot.child("phoneNumber").getValue().toString());
+            }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
 
-        stateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //선택된 데이터로 저장
-                String msg = adapterView.getSelectedItem().toString();
-                Log.e("test",msg);
-                stateRef.setValue(msg);
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
+
+
     }
+
+
 }
