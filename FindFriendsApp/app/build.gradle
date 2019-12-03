@@ -32,7 +32,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.2.0'
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
-    //implementation files('src\\main\\jniLibs\\libDaumMapAndroid.jar')
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
 }
