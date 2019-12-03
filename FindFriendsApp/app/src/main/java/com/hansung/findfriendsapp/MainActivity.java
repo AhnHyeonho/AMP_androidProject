@@ -91,7 +91,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void singUp(View view) {
-        Pair<String, String> loginInfo = new Pair(editTextEmail.getText().toString(), editTextPassword.getText().toString());
+        email = editTextEmail.getText().toString();
+        password = editTextPassword.getText().toString();
+        Log.d("ahn", "signUp// email : " + email + " password : " + password);
+        Pair<String, String> loginInfo = Pair.create(email, password);
 
         if (isValidEmail() && isValidPasswd()) {
             createUser(loginInfo);
@@ -99,7 +102,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void signIn(View view) {
-        Pair<String, String> loginInfo = new Pair(editTextEmail.getText().toString(), editTextPassword.getText().toString());
+        email = editTextEmail.getText().toString();
+        password = editTextPassword.getText().toString();
+        Log.d("ahn", "signIn// email : " + email + " password : " + password);
+        Pair<String, String> loginInfo = Pair.create(email, password);
 
         if (isValidEmail() && isValidPasswd()) {
             loginUser(loginInfo);
@@ -131,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess() {
                 //회원가입 성공에 대한 처리
                 Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
+                //realtime database의 users 트리안에 해당 uid로 child 생성.
             }
 
             @Override
