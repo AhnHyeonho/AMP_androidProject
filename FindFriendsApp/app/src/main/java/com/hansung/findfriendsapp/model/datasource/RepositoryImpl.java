@@ -78,4 +78,5 @@ public class RepositoryImpl implements Repository {
     public User getUser() {
         return remoteDataSource.getUser();
     }
+
 }
