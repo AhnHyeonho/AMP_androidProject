@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DummyMapsActivity"></activity>
+        <activity android:name=".SpotlightActivity"></activity>
+        <activity android:name=".DummyMapsActivity" />
 
         <meta-data
             android:name="com.google.android.gms.version"

@@ -53,14 +53,14 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             //Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
                         } else {
                             // 로그인 실패
-                            callback.onFail();
-                            //Toast.makeText(MainActivity.this, R.string.failed_signup, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                    callback.onFail();
+                    //Toast.makeText(MainActivity.this, R.string.failed_signup, Toast.LENGTH_SHORT).show();
+                }
+    }
+});
         firebaseAuth.signInWithEmailAndPassword(loginInfo.left, loginInfo.right)
-                .addOnFailureListener(new OnFailureListener() {
-            @Override
+        .addOnFailureListener(new OnFailureListener() {
+@Override
             public void onFailure(@NonNull Exception e) {
 
             }
