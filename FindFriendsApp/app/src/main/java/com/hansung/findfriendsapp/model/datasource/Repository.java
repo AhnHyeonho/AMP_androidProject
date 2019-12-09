@@ -18,5 +18,7 @@ public interface Repository {
 
     void initFirebase(); // firebase 관련 초기화 메소드
 
-    User getUser(); // 로그인을 시도한 User에 대한 정보를 읽어오는 메소드
+    User getUser(String uid); // 로그인을 시도한 User에 대한 정보를 읽어오는 메소드
+
+    void setSpotlightColor(String color); // spotlight 값 변경하는 메소드
 }
