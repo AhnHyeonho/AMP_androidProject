@@ -195,7 +195,7 @@ public class MyPageActivity extends AppCompatActivity {
                 stateSpinner.setAdapter(adapter);   //리스너에 어댑터를 설정하고,
                 for(int i=0; i<stateArray.size();i++) { //데이터베이스로부터 저장되어있는 상태메세지를 스피너의 초깃값으로 지정.
                     if(uStateMessage.equals("")){
-                        userIdRef.child("state").setValue("Online");
+                        userIdRef.child("state").setValue("Online");        //계정을 처음만들어 정보가 없는 경우 Online으로 셋팅
                         uStateMessage = "Online";
                     }
                     if (stateArray.get(i).equals(uStateMessage)) {
