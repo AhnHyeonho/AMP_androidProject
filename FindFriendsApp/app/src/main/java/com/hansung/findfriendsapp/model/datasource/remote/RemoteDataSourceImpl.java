@@ -183,7 +183,8 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
         userReference.child(userUid).child("location").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                location =  dataSnapshot.child("location").getValue().toString();
+                location =  dataSnapshot.getValue().toString();
+                Log.e("test", location);
             }
 
             @Override
