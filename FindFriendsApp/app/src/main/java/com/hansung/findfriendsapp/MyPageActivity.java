@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,13 +33,13 @@ public class MyPageActivity extends AppCompatActivity {
     private ArrayList<String> stateArray = new ArrayList<>();
     //private String [] stateArray = {"online","offline","away"};
     private ArrayAdapter adapter;
-    private EditText userAlias;
+    private EditText userNickname;
     private Spinner stateSpinner;
     private EditText phoneNumber;
     private Button applyBtn;
     private Button revertBtn;
 
-    private String uAlias;
+    private String uNickname;
     private String uPhoneNumber;
     private String uStateMessage;
 
@@ -62,19 +61,19 @@ public class MyPageActivity extends AppCompatActivity {
         Log.e("test", "userID = " +userID);
         userIdRef = userRef.child(userID);
 
-        userAlias = (EditText)findViewById(R.id.userAlias);
+        userNickname = (EditText)findViewById(R.id.userNickname);
         stateSpinner = (Spinner)findViewById(R.id.stateSpinner);
         phoneNumber = (EditText)findViewById(R.id.phoneNumber);
         applyBtn = (Button)findViewById(R.id.applyBtn);
         revertBtn = (Button)findViewById(R.id.revertBtn);
-        uAlias = "";
+        uNickname = "";
         uPhoneNumber="";
         uStateMessage = "";
 
         applyBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                String inputAlias = userAlias.getText().toString();
+                String inputNickname = userNickname.getText().toString();
                 String inputPhoneNumber = phoneNumber.getText().toString();
                 String inputState = stateSpinner.getSelectedItem().toString();
 
@@ -83,14 +82,14 @@ public class MyPageActivity extends AppCompatActivity {
                 builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String inputAlias = userAlias.getText().toString();
+                        String inputNickname = userNickname.getText().toString();
                         String inputPhoneNumber = phoneNumber.getText().toString();
                         String inputState = stateSpinner.getSelectedItem().toString();
-                        userIdRef.child("alias").setValue(inputAlias);
+                        userIdRef.child("nickName").setValue(inputNickname);
                         userIdRef.child("phoneNumber").setValue(inputPhoneNumber);
                         userIdRef.child("state").setValue(inputState);
 
-                        uAlias = inputAlias;
+                        uNickname = inputNickname;
                         uPhoneNumber = inputPhoneNumber;
                         uStateMessage = inputState;
                     }
@@ -101,7 +100,7 @@ public class MyPageActivity extends AppCompatActivity {
                     }
                 });
 
-                if(!inputAlias.equals(uAlias) ||                      ////사용자가 데이터를 변경하고 클릭했을 시
+                if(!inputNickname.equals(uNickname) ||                      ////사용자가 데이터를 변경하고 클릭했을 시
                         !inputPhoneNumber.equals(uPhoneNumber) ||
                         !inputState.equals(uStateMessage)){
                     AlertDialog dialog = builder.create();
@@ -114,8 +113,8 @@ public class MyPageActivity extends AppCompatActivity {
         revertBtn.setOnClickListener(new View.OnClickListener(){    //이전 액티비티로 돌아가기 버튼
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"revert 클릭",Toast.LENGTH_LONG).show();
-
+                Toast.makeText(context,"로그 아웃", Toast.LENGTH_SHORT);
+                finish();
             }
         });
 
@@ -141,12 +140,12 @@ public class MyPageActivity extends AppCompatActivity {
 
                 ////////////////////////////////데이터 임시 저장 : apply버튼시 변경한 데이터가 있는지 확인을 위함.///////////////
                 DataSnapshot userDataSnapShot = dataSnapshot.child("User").child(userID);
-                uAlias = userDataSnapShot.child("alias").getValue().toString();
+                uNickname = userDataSnapShot.child("nickName").getValue().toString();
                 uStateMessage = userDataSnapShot.child("state").getValue().toString();
                 uPhoneNumber = userDataSnapShot.child("phoneNumber").getValue().toString();
 
                 ///////////////////안드로이드 사용자 입력란 default value set/////////////////
-                userAlias.setText(uAlias);
+                userNickname.setText(uNickname);
                 stateSpinner.setAdapter(adapter);   //리스너에 어댑터를 설정하고,
                 for(int i=0; i<stateArray.size();i++) { //데이터베이스로부터 저장되어있는 상태메세지를 스피너의 초깃값으로 지정.
                     if (stateArray.get(i).equals(uStateMessage)) {
@@ -187,14 +186,18 @@ public class MyPageActivity extends AppCompatActivity {
 
                 ////////////////////////////////데이터 임시 저장 : apply버튼시 변경한 데이터가 있는지 확인을 위함.///////////////
                 DataSnapshot userDataSnapShot = dataSnapshot.child("User").child(userID);
-                uAlias = userDataSnapShot.child("alias").getValue().toString();
+                uNickname = userDataSnapShot.child("nickName").getValue().toString();
                 uStateMessage = userDataSnapShot.child("state").getValue().toString();
                 uPhoneNumber = userDataSnapShot.child("phoneNumber").getValue().toString();
 
                 ///////////////////안드로이드 사용자 입력란 default value set/////////////////
-                userAlias.setText(userDataSnapShot.child("alias").getValue().toString());
+                userNickname.setText(userDataSnapShot.child("nickName").getValue().toString());
                 stateSpinner.setAdapter(adapter);   //리스너에 어댑터를 설정하고,
                 for(int i=0; i<stateArray.size();i++) { //데이터베이스로부터 저장되어있는 상태메세지를 스피너의 초깃값으로 지정.
+                    if(uStateMessage.equals("")){
+                        userIdRef.child("state").setValue("Online");
+                        uStateMessage = "Online";
+                    }
                     if (stateArray.get(i).equals(uStateMessage)) {
                         stateSpinner.setSelection(i);
                         break;
