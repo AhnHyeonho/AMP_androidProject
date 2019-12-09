@@ -45,5 +45,13 @@ public class DummyMapsActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        spotlightBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DummyMapsActivity.this,SpotlightActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

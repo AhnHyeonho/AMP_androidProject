@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hansung.findfriendsapp.model.datasource.Repository;
 import com.hansung.findfriendsapp.model.datasource.RepositoryImpl;
+import com.hansung.findfriendsapp.model.datasource.data.User;
 import com.hansung.findfriendsapp.model.datasource.remote.RemoteDataSourceImpl;
 
 import java.util.Random;
@@ -28,7 +29,7 @@ public class SpotlightActivity extends AppCompatActivity {
     private Button backBtn;
     private TextView nickNameTextView;
     private TextView spotlightView;
-
+    private User currentUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +41,11 @@ public class SpotlightActivity extends AppCompatActivity {
 
         repository.initFirebase();
         firebaseAuth = FirebaseAuth.getInstance();
-        userID = firebaseAuth.getCurrentUser().getUid();
-        nickNameTextView.setText("nickName");
+
+        userID = firebaseAuth.getCurrentUser().getUid(); // 현재 접속한 uid
+        currentUser = repository.getUser(userID); // 현재 접속한 uid를 기반으로 데이터 리딩
+
+        nickNameTextView.setText(currentUser.nickName);
 
         int color = getRandomColor(); // 랜덤 색상 지정
         spotlightView.setBackgroundColor(color); // spotcolorView 배경색 변경

@@ -2,6 +2,7 @@ package com.hansung.findfriendsapp.model.datasource.remote;
 
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.database.DatabaseReference;
 import com.hansung.findfriendsapp.model.datasource.LoginCallBack;
 import com.hansung.findfriendsapp.model.datasource.data.Pair;
 import com.hansung.findfriendsapp.model.datasource.data.User;
@@ -17,6 +18,8 @@ public interface RemoteDataSource {
 
     void initFirebase(); // firebase 관련 초기화 메소드
 
-    User getUser(); // 로그인을 시도한 User에 대한 정보를 읽어오는 메소드
+    User getUser(String uid); // 로그인을 시도한 User에 대한 정보를 읽어오는 메소드
+    
+    void setSpotlightColor(String color); // spotlight 값 변경하는 메소드
 }
 

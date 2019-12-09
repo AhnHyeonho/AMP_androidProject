@@ -1,7 +1,6 @@
 package com.hansung.findfriendsapp.model.datasource.remote;
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -17,9 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.hansung.findfriendsapp.model.datasource.LoginCallBack;
 import com.hansung.findfriendsapp.model.datasource.data.Pair;
 import com.hansung.findfriendsapp.model.datasource.data.User;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class RemoteDataSourceImpl implements RemoteDataSource {
 
@@ -53,18 +49,18 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             //Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
                         } else {
                             // 로그인 실패
-                    callback.onFail();
-                    //Toast.makeText(MainActivity.this, R.string.failed_signup, Toast.LENGTH_SHORT).show();
-                }
-    }
-});
+                            callback.onFail();
+                            //Toast.makeText(MainActivity.this, R.string.failed_signup, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
         firebaseAuth.signInWithEmailAndPassword(loginInfo.left, loginInfo.right)
-        .addOnFailureListener(new OnFailureListener() {
-@Override
-            public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
 
-            }
-        });
+                    }
+                });
     }
 
     @Override
@@ -80,7 +76,7 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             Log.d("ahn", "curretUser uid : " + firebaseAuth.getCurrentUser().getUid());
 
                             String userUid = firebaseAuth.getCurrentUser().getUid();
-                            userReference.child(userUid).setValue(new User("","","","","","","","",""));
+                            userReference.child(userUid).setValue(new User("", "", "", "", "", "", "", "", ""));
 
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
@@ -105,14 +101,13 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             // 로그인 성공
                             String userUid = firebaseAuth.getCurrentUser().getUid();
 
-                            if(userReference.child(userUid)==null){
+                            if (userReference.child(userUid) == null) {
                                 // 해당 계정이 존재하지 않으면
                                 Log.d("ahn", "userReference does not exists");
-                                userReference.child(userUid).setValue(new User("","","","","","","","",""));
-                            }
-                            else{
+                                userReference.child(userUid).setValue(new User("", "", "", "", "", "", "", "", ""));
+                            } else {
                                 Log.d("ahn", "userReference exists");
-                        }
+                            }
 
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
@@ -150,9 +145,24 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
 
     //로그인을 시도한 User에 대한 정보를 읽어오는 메소드
     @Override
-    public User getUser() {
-        return null; // 작성해야함
+    public User getUser(String uid) {
+        User user = new User(
+                userReference.child(uid).child("userName").getKey(),
+                userReference.child(uid).child("userEmail").getKey(),
+                userReference.child(uid).child("location").getKey(),
+                userReference.child(uid).child("nickName").getKey(),
+                userReference.child(uid).child("statusMessage").getKey(),
+                userReference.child(uid).child("phoneNumber").getKey(),
+                userReference.child(uid).child("userGroups").getKey(),
+                userReference.child(uid).child("state").getKey(),
+                userReference.child(uid).child("spotlight").getKey()
+                );
+        return user; // 작성해야함
     }
 
+    public void setSpotlightColor(String color) {
+        String userUid = firebaseAuth.getCurrentUser().getUid();
+        userReference.child(userUid).child("spotlight").setValue(color);
+    }
 }
 
