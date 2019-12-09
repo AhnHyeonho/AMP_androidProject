@@ -84,4 +84,10 @@ public class RepositoryImpl implements Repository {
         remoteDataSource.setSpotlightColor((color));
     }
 
+    @Override
+    public void setLocation(String location) {remoteDataSource.setLocation(location);} // location 지정 메소드
+
+    @Override
+    public String getLocation() {return remoteDataSource.getLocation();} // location 지정 메소드
+
 }
