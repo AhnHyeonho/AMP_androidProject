@@ -1,6 +1,7 @@
 package com.hansung.findfriendsapp.model.datasource.remote;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -79,7 +80,7 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             Log.d("ahn", "curretUser uid : " + firebaseAuth.getCurrentUser().getUid());
 
                             String userUid = firebaseAuth.getCurrentUser().getUid();
-                            userReference.child(userUid).setValue(new User("","","","","","",""));
+                            userReference.child(userUid).setValue(new User("","","","","","","",""));
 
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
@@ -93,6 +94,7 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                 });
     }
 
+    /*구글 로그인*/
     @Override
     public void doFirebaseAuthWithGoogle(AuthCredential credential, final LoginCallBack callback) {
         firebaseAuth.signInWithCredential(credential)
@@ -102,7 +104,15 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                         if (task.isSuccessful()) {
                             // 로그인 성공
                             String userUid = firebaseAuth.getCurrentUser().getUid();
-                            userReference.child(userUid).setValue(new User("","","","","","",""));
+
+                            if(userReference.child(userUid)==null){
+                                // 해당 계정이 존재하지 않으면
+                                Log.d("ahn", "userReference does not exists");
+                                userReference.child(userUid).setValue(new User("","","","","","","",""));
+                            }
+                            else{
+                                Log.d("ahn", "userReference exists");
+                        }
 
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
