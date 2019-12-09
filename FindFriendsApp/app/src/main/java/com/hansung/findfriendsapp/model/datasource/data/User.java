@@ -11,11 +11,12 @@ public class User {
     public String statusMessage; // 상태 메세지
     public String phoneNumber; // 핸드폰 번호
     public String userGroups; // 가입된 그룹. #을 기준으로 나뉨. ex. A#B#C 면 A그룹, B그룹,C그룹에 소속
+    public String userStatus; // 로그인 상태
 
     public User() {
     }
 
-    public User(String userName, String userEmail, String location, String nickName, String statusMessage, String phoneNumber, String userGroups) {
+    public User(String userName, String userEmail, String location, String nickName, String statusMessage, String phoneNumber, String userGroups, String userStatus) {
         this.userName = userName;
         this.userEmail = userEmail;
         this.location = location;
@@ -23,5 +24,6 @@ public class User {
         this.statusMessage = statusMessage;
         this.phoneNumber = phoneNumber;
         this.userGroups = userGroups;
+        this.userStatus = userStatus;
     }
 }
