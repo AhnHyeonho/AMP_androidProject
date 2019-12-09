@@ -80,7 +80,7 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             Log.d("ahn", "curretUser uid : " + firebaseAuth.getCurrentUser().getUid());
 
                             String userUid = firebaseAuth.getCurrentUser().getUid();
-                            userReference.child(userUid).setValue(new User("","","","","","","",""));
+                            userReference.child(userUid).setValue(new User("","","","","","","","",""));
 
                             callback.onSuccess();
                             //Toast.makeText(MainActivity.this, R.string.success_signup, Toast.LENGTH_SHORT).show();
@@ -108,7 +108,7 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                             if(userReference.child(userUid)==null){
                                 // 해당 계정이 존재하지 않으면
                                 Log.d("ahn", "userReference does not exists");
-                                userReference.child(userUid).setValue(new User("","","","","","","",""));
+                                userReference.child(userUid).setValue(new User("","","","","","","","",""));
                             }
                             else{
                                 Log.d("ahn", "userReference exists");
