@@ -23,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MyPageActivity">
+        <activity android:name=".MyPageActivity"/>
+        <activity android:name=".MapsActivity"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>

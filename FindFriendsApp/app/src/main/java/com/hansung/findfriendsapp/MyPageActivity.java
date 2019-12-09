@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,8 +27,9 @@ import java.util.ArrayList;
 
 public class MyPageActivity extends AppCompatActivity {
     private Context context;
+    private FirebaseAuth firebaseAuth;
     /////////////////////////////////////임시 : 액티비티를 실행할 때 실시간 데이터 베이스에서 유저의 계정을 찾을 수 있는 identity를 intent를 통해서 얻는다.
-    private String userID = "test2";   //key의 역할을 임시로 admin으로 지정.
+    private String userID;   //key의 역할을 임시로 admin으로 지정.
     //------------------------------------------------------------------------------------------------------------------------------------//
     private ArrayList<String> stateArray = new ArrayList<>();
     //private String [] stateArray = {"online","offline","away"};
@@ -43,8 +45,8 @@ public class MyPageActivity extends AppCompatActivity {
     private String uStateMessage;
 
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-    DatabaseReference accountRef = rootRef.child("account");
-    DatabaseReference userRef = accountRef.child(userID);
+    DatabaseReference userRef = rootRef.child("User");
+    DatabaseReference userIdRef;
 
 
 
@@ -53,6 +55,12 @@ public class MyPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_page);
         context = this;
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        userID = firebaseAuth.getCurrentUser().getUid();
+        Log.e("test", "userID = " +userID);
+        userIdRef = userRef.child(userID);
 
         userAlias = (EditText)findViewById(R.id.userAlias);
         stateSpinner = (Spinner)findViewById(R.id.stateSpinner);
@@ -78,9 +86,9 @@ public class MyPageActivity extends AppCompatActivity {
                         String inputAlias = userAlias.getText().toString();
                         String inputPhoneNumber = phoneNumber.getText().toString();
                         String inputState = stateSpinner.getSelectedItem().toString();
-                        userRef.child("alias").setValue(inputAlias);
-                        userRef.child("phoneNumber").setValue(inputPhoneNumber);
-                        userRef.child("state").setValue(inputState);
+                        userIdRef.child("alias").setValue(inputAlias);
+                        userIdRef.child("phoneNumber").setValue(inputPhoneNumber);
+                        userIdRef.child("state").setValue(inputState);
 
                         uAlias = inputAlias;
                         uPhoneNumber = inputPhoneNumber;
@@ -98,7 +106,8 @@ public class MyPageActivity extends AppCompatActivity {
                         !inputState.equals(uStateMessage)){
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
+                } else{
+                    Toast.makeText(context,"변경 사항이 없습니다.", Toast.LENGTH_LONG);
                 }
             }
         });
@@ -131,7 +140,7 @@ public class MyPageActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
 
                 ////////////////////////////////데이터 임시 저장 : apply버튼시 변경한 데이터가 있는지 확인을 위함.///////////////
-                DataSnapshot userDataSnapShot = dataSnapshot.child("account").child(userID);
+                DataSnapshot userDataSnapShot = dataSnapshot.child("User").child(userID);
                 uAlias = userDataSnapShot.child("alias").getValue().toString();
                 uStateMessage = userDataSnapShot.child("state").getValue().toString();
                 uPhoneNumber = userDataSnapShot.child("phoneNumber").getValue().toString();
@@ -160,7 +169,7 @@ public class MyPageActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        userRef.child("state").setValue("Offline");
+        userIdRef.child("state").setValue("Offline");
     }
 
 
@@ -177,7 +186,7 @@ public class MyPageActivity extends AppCompatActivity {
                 adapter = new ArrayAdapter(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,stateArray);   //스피너 어댑터 초기화
 
                 ////////////////////////////////데이터 임시 저장 : apply버튼시 변경한 데이터가 있는지 확인을 위함.///////////////
-                DataSnapshot userDataSnapShot = dataSnapshot.child("account").child(userID);
+                DataSnapshot userDataSnapShot = dataSnapshot.child("User").child(userID);
                 uAlias = userDataSnapShot.child("alias").getValue().toString();
                 uStateMessage = userDataSnapShot.child("state").getValue().toString();
                 uPhoneNumber = userDataSnapShot.child("phoneNumber").getValue().toString();

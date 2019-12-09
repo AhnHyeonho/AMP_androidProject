@@ -156,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
                 //로그인 성공에 대한 처리
                 //여기에 intent를 주면된다.
                 Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), MyPageActivity.class);
+                startActivity(intent);
+
             }
 
             @Override
