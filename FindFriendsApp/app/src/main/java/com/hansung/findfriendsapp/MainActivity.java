@@ -1,9 +1,11 @@
 package com.hansung.findfriendsapp;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
@@ -12,7 +14,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -20,9 +25,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 import com.hansung.findfriendsapp.model.datasource.LoginCallBack;
 import com.hansung.findfriendsapp.model.datasource.Repository;
 import com.hansung.findfriendsapp.model.datasource.RepositoryImpl;
@@ -33,10 +46,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.regex.Pattern;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     // Repository 생성 및 RemoteDataSource 생성
     private Repository repository = new RepositoryImpl(RemoteDataSourceImpl.getInstance());
+
+    private FirebaseDatabase userRef;
 
     // 비밀번호 정규식
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^[a-zA-Z0-9!@.#$%^&*?_~]{4,16}$");
@@ -70,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
         getHashKey();
 
         viewInit();
+
+        //permission 얻기
+        getLocationPermission();
 
         // 파이어베이스 인증 객체 선언
         repository.initFirebase();
@@ -157,7 +175,9 @@ public class MainActivity extends AppCompatActivity {
                 //여기에 intent를 주면된다.
                 Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(getApplicationContext(),DummyMapsActivity.class);
+                Log.d("ahn", "normal login success");
+                getDeviceLocation();
+                Intent intent = new Intent(getApplicationContext(), DummyMapsActivity.class);
                 startActivity(intent);
 
             }
@@ -199,7 +219,9 @@ public class MainActivity extends AppCompatActivity {
                 // 로그인 성공
                 Toast.makeText(MainActivity.this, R.string.success_login, Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(MainActivity.this,DummyMapsActivity.class);
+                Log.d("ahn", "google login success");
+                getDeviceLocation();
+                Intent intent = new Intent(MainActivity.this, DummyMapsActivity.class);
                 startActivity(intent);
 
             }
@@ -219,7 +241,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // 카카오맵 api에 등록할 해쉬키를 얻는 메소드
-    private void getHashKey(){
+    private void getHashKey() {
         PackageInfo packageInfo = null;
         try {
             packageInfo = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
@@ -241,4 +263,81 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private Boolean mLocationPermissionsGranted = false;
+    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+    private LocationRequest locationRequest;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        mLocationPermissionsGranted = false;
+
+        switch (requestCode) {
+            case LOCATION_PERMISSION_REQUEST_CODE: {
+                if (grantResults.length > 0) {
+                    for (int i = 0; i < grantResults.length; i++) {
+                        if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                            mLocationPermissionsGranted = false;
+                            return;
+                        }
+                    }
+                    mLocationPermissionsGranted = true;
+                }
+            }
+        }
+    }
+
+    private void getDeviceLocation() {
+
+        locationRequest = new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+
+        builder.addLocationRequest(locationRequest);
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        try {
+            if (mLocationPermissionsGranted) {
+                Task location = mFusedLocationProviderClient.getLastLocation();
+                location.addOnCompleteListener(new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            Location currentLocation = (Location) task.getResult();
+
+                            LatLng mLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                            String location = Double.toString(currentLocation.getLatitude()) + "%" + Double.toString(currentLocation.getLongitude());
+                            repository.setLocation(location);
+                            Log.d("ahn", "location:" + repository.getLocation());
+                        } else {
+                            Toast.makeText(MainActivity.this, "unable to get current location", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        } catch (SecurityException e) {
+        }
+    }
+
+
+    private void getLocationPermission() {
+        Log.d("ahn", "getLocationPermission: Getting Location Permissions");
+        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION};
+
+        if (ContextCompat.checkSelfPermission(this.getApplicationContext(), FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this.getApplicationContext(), COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionsGranted = true;
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, LOCATION_PERMISSION_REQUEST_CODE);
+            }
+        } else {
+            ActivityCompat.requestPermissions(this, permissions,
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
 }

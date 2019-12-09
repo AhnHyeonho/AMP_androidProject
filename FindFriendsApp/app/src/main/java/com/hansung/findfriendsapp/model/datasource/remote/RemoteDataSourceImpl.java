@@ -11,8 +11,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.hansung.findfriendsapp.model.datasource.LoginCallBack;
 import com.hansung.findfriendsapp.model.datasource.data.Pair;
 import com.hansung.findfriendsapp.model.datasource.data.User;
@@ -23,6 +26,7 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference userReference;
     private DatabaseReference groupReference;
+    private String location;
 
     private RemoteDataSourceImpl() {
     }
@@ -156,13 +160,38 @@ public class RemoteDataSourceImpl implements RemoteDataSource {
                 userReference.child(uid).child("userGroups").getKey(),
                 userReference.child(uid).child("state").getKey(),
                 userReference.child(uid).child("spotlight").getKey()
-                );
+        );
         return user; // 작성해야함
     }
 
+    @Override
     public void setSpotlightColor(String color) {
         String userUid = firebaseAuth.getCurrentUser().getUid();
         userReference.child(userUid).child("spotlight").setValue(color);
+    }
+
+    @Override
+    public void setLocation(String location) {
+        String userUid = firebaseAuth.getCurrentUser().getUid();
+        userReference.child(userUid).child("location").setValue(location);
+    }
+
+    @Override
+    public String getLocation() {
+        String userUid = firebaseAuth.getCurrentUser().getUid();
+
+        userReference.child(userUid).child("location").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                location =  dataSnapshot.child("location").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return location;
     }
 }
 

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.hansung.findfriendsapp.model.datasource.Repository;
 import com.hansung.findfriendsapp.model.datasource.RepositoryImpl;
 import com.hansung.findfriendsapp.model.datasource.data.User;

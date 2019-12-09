@@ -21,4 +21,8 @@ public interface Repository {
     User getUser(String uid); // 로그인을 시도한 User에 대한 정보를 읽어오는 메소드
 
     void setSpotlightColor(String color); // spotlight 값 변경하는 메소드
+
+    void setLocation(String location); // location 지정 메소드
+
+    String getLocation(); // location getter 메소드
 }
