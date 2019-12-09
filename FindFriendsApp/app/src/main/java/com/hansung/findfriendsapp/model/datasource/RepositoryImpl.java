@@ -37,13 +37,13 @@ public class RepositoryImpl implements Repository {
         remoteDataSource.doCreateUser(loginInfo, new LoginCallBack() {
             @Override
             public void onSuccess() {
-                Log.d("ahn","repository onComplete Success");
+                Log.d("ahn", "repository onComplete Success");
                 callBack.onSuccess();   // 계정 생성에 대한 성공 콜백
             }
 
             @Override
             public void onFail() {
-                Log.d("ahn","repository onComplete Fail");
+                Log.d("ahn", "repository onComplete Fail");
                 callBack.onFail();   // 계정 생성에 대한 실패 콜백
             }
         });
@@ -75,8 +75,13 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public User getUser() {
-        return remoteDataSource.getUser();
+    public User getUser(String uid) {
+        return remoteDataSource.getUser(uid);
+    }
+
+    @Override
+    public void setSpotlightColor(String color) {
+        remoteDataSource.setSpotlightColor((color));
     }
 
 }
